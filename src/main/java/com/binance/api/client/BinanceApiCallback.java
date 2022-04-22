@@ -21,4 +21,10 @@ public interface BinanceApiCallback<T> {
      * @param cause the cause of the failure
      */
     default void onFailure(Throwable cause) {}
+
+    default void onClosed(int code, String reason) {
+    }
+
+    default void onClosing(int code, String reason) {
+    }
 }
