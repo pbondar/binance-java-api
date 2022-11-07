@@ -95,6 +95,7 @@ public class UserDataUpdateEvent {
 
   public enum UserDataUpdateEventType {
     /** Corresponds to "outboundAccountPosition" events. */
+    ACCOUNT_UPDATE("outboundAccountInfo"),
     ACCOUNT_POSITION_UPDATE("outboundAccountPosition"),
     /** Corresponds to "balanceUpdate" events. */
     BALANCE_UPDATE("balanceUpdate"),
@@ -113,6 +114,8 @@ public class UserDataUpdateEvent {
     }
 
     public static UserDataUpdateEventType fromEventTypeId(String eventTypeId) {
+      if (ACCOUNT_UPDATE.eventTypeId.equals(eventTypeId))
+        return ACCOUNT_UPDATE;
       if (ORDER_TRADE_UPDATE.eventTypeId.equals(eventTypeId)) {
         return ORDER_TRADE_UPDATE;
       } else if (ACCOUNT_POSITION_UPDATE.eventTypeId.equals(eventTypeId)) {
