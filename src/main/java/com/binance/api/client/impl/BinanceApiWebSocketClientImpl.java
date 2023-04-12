@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * Binance API WebSocket client implementation using OkHttp.
  */
-public class BinanceApiWebSocketClientImpl implements BinanceApiWebSocketClient, Closeable {
+public class BinanceApiWebSocketClientImpl implements BinanceApiWebSocketClient {
 
     private final OkHttpClient client;
 
@@ -48,6 +48,15 @@ public class BinanceApiWebSocketClientImpl implements BinanceApiWebSocketClient,
         final String channel = Arrays.stream(symbols.split(","))
                 .map(String::trim)
                 .map(s -> String.format("%s@aggTrade", s))
+                .collect(Collectors.joining("/"));
+        return createNewWebSocket(channel, new BinanceApiWebSocketListener<>(callback, AggTradeEvent.class));
+    }
+
+
+    public Closeable onTradeEvent(String symbols, BinanceApiCallback<AggTradeEvent> callback) {
+        final String channel = Arrays.stream(symbols.split(","))
+                .map(String::trim)
+                .map(s -> s + "@trade")
                 .collect(Collectors.joining("/"));
         return createNewWebSocket(channel, new BinanceApiWebSocketListener<>(callback, AggTradeEvent.class));
     }
@@ -94,13 +103,6 @@ public class BinanceApiWebSocketClientImpl implements BinanceApiWebSocketClient,
         return this.createNewWebSocket(channel, new BinanceApiWebSocketListener<>(callback, MiniTickerEvent.class));
     }
 
-
-    /**
-     * @deprecated This method is no longer functional. Please use the returned {@link Closeable} from any of the other methods to close the web socket.
-     */
-    @Override
-    public void close() {
-    }
 
     private Closeable createNewWebSocket(String channel, BinanceApiWebSocketListener<?> listener) {
         String streamingUrl = String.format("%s/%s", BinanceApiConfig.useTestnetStreaming?BinanceApiConfig.getStreamTestNetBaseUrl():BinanceApiConfig.getStreamApiBaseUrl(), channel);
